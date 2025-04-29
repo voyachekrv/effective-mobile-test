@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: Request API
+  version: 1.0.0
+  description: API для работы с обращениями
+servers:
+  - url: http://localhost:18000
+
+paths:
+  /api/request:
+    get:
+      summary: Получить список обращений
+      parameters:
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          required: false
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date
+          required: false
+        - in: query
+          name: to
+          schema:
+            type: string
+            format: date
+          required: false
+      responses:
+        200:
+          description: Успешный ответ
+        500:
+          description: Внутренняя ошибка сервера
+
+    post:
+      summary: Создать новое обращение
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - topic
+                - text
+              properties:
+                subject:
+                  type: string
+                description:
+                  type: string
+      responses:
+        201:
+          description: Обращение создано
+        400:
+          description: Ошибка запроса
+        500:
+          description: Внутренняя ошибка сервера
+
+  /api//request/{id}/start:
+    post:
+      summary: Взять обращение в работу
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Обращение принято в работу
+        404:
+          description: Обращение не найдено
+        500:
+          description: Внутренняя ошибка сервера
+
+  /api/request/{id}/complete:
+    post:
+      summary: Завершить обращение
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - closingText
+              properties:
+                closingText:
+                  type: string
+      responses:
+        200:
+          description: Обращение завершено
+        400:
+          description: Ошибка запроса
+        404:
+          description: Обращение не найдено
+        500:
+          description: Внутренняя ошибка сервера
+
+  /api/request/{id}/cancel:
+    post:
+      summary: Отменить обращение
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - closingText
+              properties:
+                closingText:
+                  type: string
+      responses:
+        200:
+          description: Обращение отменено
+        400:
+          description: Ошибка запроса
+        404:
+          description: Обращение не найдено
+        500:
+          description: Внутренняя ошибка сервера
+
+  /api/cancel-all-in-progress:
+    post:
+      summary: Отменить все обращения в статусе "в работе"
+      responses:
+        200:
+          description: Все обращения отменены
+        500:
+          description: Внутренняя ошибка сервера
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
