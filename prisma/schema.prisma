@@ -1,0 +1,55 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Обращение
+model Request {
+  // ID обращения
+  id String @id @default(dbgenerated("gen_random_uuid()")) @map("id") @db.Uuid
+
+  // Дата создания обращения
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Дата обновления обращения
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Тема обращения
+  subject String @map("subject") @db.VarChar(512)
+
+  // Описание проблемы
+  description String @map("description") @db.Text
+
+  // Описание решения
+  solutionText String? @map("solution_text") @db.Text
+
+  // Описание причины отмены
+  cancelReason String? @map("cancel_reason") @db.Text
+
+  // Статус обращенияы
+  status RequestStatus @default(NEW) @map("request_status")
+
+  @@map("request")
+}
+
+// Статус обращения
+enum RequestStatus {
+  // Новое обращение
+  NEW
+
+  // В процессе
+  IN_PROGRESS
+
+  // Завершено
+  COMPLETED
+
+  // Отменено
+  CANCELLED
+
+  @@map("request_status")
+}

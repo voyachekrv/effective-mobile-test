@@ -1,0 +1,83 @@
+services:
+  postgres:
+    container_name: postgres.requests-app
+    hostname: postgres.requests-app
+    image: postgres:13.3
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - ./.postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./volumes/postgres:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - requests-app-network
+
+  prometheus:
+    container_name: prometheus.requests-app
+    hostname: prometheus.requests-app
+    image: prom/prometheus:latest
+    ports:
+      - ${PROMETHEUS_PORT}:${PROMETHEUS_PORT}
+    volumes:
+      - ./volumes/prometheus:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart: always
+    networks:
+      - requests-app-network
+
+  grafana:
+    container_name: grafana.requests-app
+    hostname: grafana.requests-app
+    image: grafana/grafana:latest
+    depends_on:
+      - prometheus
+    env_file:
+      - .env
+    ports:
+      - ${GRAFANA_PORT}:${GRAFANA_PORT}
+    restart: always
+    networks:
+      - requests-app-network
+
+  redis:
+    container_name: redis.requests-app
+    hostname: redis.requests-app
+    image: redis:7.2.4-alpine
+    env_file:
+      - .env
+    volumes:
+      - ./volumes/redis/redis:/root/redis
+      - ./volumes/redis/data:/data
+      - ./volumes/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    restart: always
+    networks:
+      - requests-app-network
+
+  application:
+    container_name: application.requests-app
+    hostname: application.requests-app
+    image: requests-app:0.0.0
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - redis
+      - prometheus
+      - grafana
+    env_file:
+      - .env
+    ports:
+      - "1${PORT}:${PORT}"
+    restart: unless-stopped
+    networks:
+      - requests-app-network
+
+networks:
+  requests-app-network:
+    name: net.requests-app
+    driver: bridge
