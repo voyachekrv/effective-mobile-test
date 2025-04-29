@@ -6,7 +6,7 @@ import { HttpError } from '../lib/http-error';
 /**
  * Миддлвейр обработки HTTP ошибки
  */
-export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof HttpError) {
     logger.error({ err, req }, err.message);
 

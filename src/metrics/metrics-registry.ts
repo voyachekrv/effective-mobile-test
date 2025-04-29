@@ -1,4 +1,4 @@
-import { Counter, Histogram, register } from 'prom-client';
+import { Counter, Histogram } from 'prom-client';
 
 /**
  * Счетчик успешных вызовов метода

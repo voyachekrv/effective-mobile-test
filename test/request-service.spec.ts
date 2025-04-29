@@ -1,5 +1,5 @@
 import { RequestService } from '../src/services/request/request-service';
-import { PrismaClient, Request, RequestStatus } from '@prisma/client';
+import { Request, RequestStatus } from '@prisma/client';
 import { HttpError } from '../src/lib/http-error';
 import { redis } from '../src/config/redis';
 import { RequestQuery } from '../src/schemas/request/request-query-schema';
