@@ -18,17 +18,6 @@ export const bodyValidatorMiddlewareTemplate = <T extends ZodRawShape>(
   next: NextFunction,
   schema: ZodObject<T>
 ): void => {
-  /* const result = schema.safeParse(req.body);
-
-  if (!result.success) {
-    res.status(HttpStatus.BAD_REQUEST).json({
-      status: HttpStatus.BAD_REQUEST,
-      errors: result.error.errors.map(e => e.message)
-    });
-  } else {
-    req.body = result.data;
-    next();
-  } */
   req.body = parseSchema(req.body, schema);
   next();
 };
